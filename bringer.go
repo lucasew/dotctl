@@ -1,13 +1,13 @@
 package main
 
 import (
-    "log"
-    "os"
-    "io"
-    "path/filepath"
-    "strings"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 
-    "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/go-homedir"
 )
 
 func (r DotctlRepo) Bring(extra ...string) error {
@@ -34,7 +34,7 @@ func (r DotctlRepo) Bring(extra ...string) error {
 }
 
 func copy_thing(from, baseto string) error {
-    item, err := homedir.Expand(from)
+	item, err := homedir.Expand(from)
 	if err != nil {
 		return err
 	}
