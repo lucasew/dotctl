@@ -6,74 +6,80 @@ import (
     "io"
     "path/filepath"
     "path"
+    "strings"
 
     "github.com/mitchellh/go-homedir"
 )
 
 func (r DotctlRepo) Bring(extra ...string) error {
-    allRules := map[string]interface{}{}
-    {
-        {
-            rules := r.RulesRepository().GetRules()
-            for _, rule := range rules {
-                allRules[rule] = nil
-            }
-        }
-        for _, rule := range extra {
-            allRules[rule] = nil
-        }
-    }
-    for rule := range allRules {
-        log.Printf("Processing rule '%s'...", rule)
-        item, err := homedir.Expand(rule)
-        if err != nil {
-            return err
-        }
-        copy_thing(item, r.basepath)
-    }
-    return nil
+	allRules := map[string]interface{}{}
+	{
+		{
+			rules := r.RulesRepository().GetRules()
+			for _, rule := range rules {
+				allRules[rule] = nil
+			}
+		}
+		for _, rule := range extra {
+			allRules[rule] = nil
+		}
+	}
+	for rule := range allRules {
+		log.Printf("Processing rule '%s'...", rule)
+		err := copy_thing(rule, r.basepath)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func copy_thing(from, baseto string) error {
-    stat, err := os.Stat(from)
-    if err != nil {
-        return err
-    }
-    if stat.IsDir() {
-        log.Printf("Copying folder %s...", from)
-        err = os.MkdirAll(filepath.Join(baseto, from), os.ModePerm)
-        if err != nil {
-            return err
-        }
-        isFirst := true
-        return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
-            if isFirst {
-                isFirst = false
-                return nil
-            }
-            return copy_thing(path, baseto)
-        })
-    } else {
-        destination := filepath.Join(baseto, from)
-        log.Printf("Copying file '%s' to '%s'...", from, destination)
-        err := os.MkdirAll(path.Dir(destination), os.ModePerm)
-        if err != nil {
-            return err
-        }
-        fdest, err := os.Create(destination)
-        if err != nil {
-            return err
-        }
-        defer fdest.Close()
-        forigin, err := os.Open(from)
-        if err != nil {
-            return err
-        }
-        defer forigin.Close()
-        _, err = io.Copy(fdest, forigin)
-        if err != nil {
-            return err
-        }
-    }
-    return nil
+    item, err := homedir.Expand(from)
+	if err != nil {
+		return err
+	}
+	fromplusbase := strings.Replace(filepath.Join(baseto, from), "~", "HOME", 1)
+	stat, err := os.Stat(item)
+	if err != nil {
+		return err
+	}
+	if stat.IsDir() {
+		log.Printf("Copying folder %s...", item)
+		err = os.MkdirAll(fromplusbase, os.ModePerm)
+		if err != nil {
+			return err
+		}
+		isFirst := true
+		return filepath.Walk(item, func(path string, info os.FileInfo, err error) error {
+			if isFirst {
+				isFirst = false
+				return nil
+			}
+			return copy_thing(path, baseto)
+		})
+	} else {
+		log.Printf("Copying file '%s' to '%s'...", item, fromplusbase)
+		println(filepath.Dir(fromplusbase))
+		println(fromplusbase)
+		err = os.MkdirAll(filepath.Dir(fromplusbase), os.ModePerm)
+		if err != nil {
+			return err
+		}
+		fdest, err := os.Create(fromplusbase)
+		if err != nil {
+			return err
+		}
+		defer fdest.Close()
+		forigin, err := os.Open(item)
+		if err != nil {
+			return err
+		}
+		defer forigin.Close()
+		_, err = io.Copy(fdest, forigin)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
