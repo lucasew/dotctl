@@ -59,8 +59,6 @@ func copy_thing(from, baseto string) error {
 		})
 	} else {
 		log.Printf("Copying file '%s' to '%s'...", item, fromplusbase)
-		println(filepath.Dir(fromplusbase))
-		println(fromplusbase)
 		err = os.MkdirAll(filepath.Dir(fromplusbase), os.ModePerm)
 		if err != nil {
 			return err
