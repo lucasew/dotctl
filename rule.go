@@ -51,7 +51,7 @@ func (r RuleRepository) GetRules() ([]string) {
     if err != nil {
         return []string{}
     }
-    return strings.Split(string(data), "\n")
+    return strings.Split(string(data), "\r\n")
 }
 
 func (r RuleRepository) SetRules(rules []string) error {
@@ -60,7 +60,7 @@ func (r RuleRepository) SetRules(rules []string) error {
         return err
     }
     defer f.Close()
-    _, err = f.WriteString(strings.Join(rules, "\n"))
+    _, err = f.WriteString(strings.Join(rules, "\r\n"))
     return err
 }
 
