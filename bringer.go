@@ -5,7 +5,6 @@ import (
     "os"
     "io"
     "path/filepath"
-    "path"
     "strings"
 
     "github.com/mitchellh/go-homedir"
