@@ -18,10 +18,7 @@ func init() {
             if err != nil {
                 cmd.PrintErrln(err)
             }
-            hostname, err := os.Hostname()
-            if err != nil {
-                cmd.PrintErrln(err)
-            }
+	    hostname := getHostname()
             err = DotCtlRepository.Git("switch", "-c", hostname)
             if err != nil {
                 cmd.PrintErrln(err)
@@ -38,4 +35,16 @@ func init() {
         },
     }
     RootCMD.AddCommand(snapshotCmd)
+}
+
+func getHostname() string {
+	hostname, ok := os.LookupEnv("HOSTNAME")
+	if ok {
+		return hostname
+	}
+	hostname, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+	return hostname
 }
