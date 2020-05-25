@@ -21,6 +21,7 @@ func init() {
 		Short: "use git in the dotctl repo from any location",
 		Long:  "use git in the dotctl from any location",
 		Args:  cobra.ArbitraryArgs,
+		DisableFlagParsing: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := DotCtlRepository.Git(args...)
 			if err != nil {
