@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -31,7 +32,7 @@ func init() {
 			if err != nil {
 				cmd.PrintErrln(err)
 			}
-			err = DotCtlRepository.Git("commit", "-m", time.Now().String())
+			err = DotCtlRepository.Git("commit", "-m", fmt.Sprintf("dotctl %s", time.Now().String()))
 		},
 	}
 	RootCMD.AddCommand(snapshotCmd)
