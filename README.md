@@ -7,7 +7,7 @@
 
 - Download the binary from the releases
 
-### The gopher way
+### The gopher way (recommended)
 
 - ```go get github.com/lucasew/dotctl```
 
