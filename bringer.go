@@ -16,6 +16,9 @@ func (r DotctlRepo) Bring(extra ...string) error {
 		{
 			rules := r.RulesRepository().GetRules()
 			for _, rule := range rules {
+				if rule == "" {
+					continue
+				}
 				allRules[rule] = nil
 			}
 		}
