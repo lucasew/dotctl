@@ -1,10 +1,6 @@
 name: Builds?
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: push
 
 jobs:
 
@@ -13,25 +9,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.13
-      id: go
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-
-    - name: Get dependencies
-      run: |
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
-
-    - name: Build
-      run: go build -v .
-
-    - name: Test
-      run: go test -v .
+    
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    
+    - name: Setup earth
+      run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
+      
+    - name: Build and test
+      run: earth +ci
+      
+    - name: Upload release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "dist/*"
+        name: Compilação automática ${{ github.sha }} para branch ${{ steps.extract_branch.outputs.branch }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit: ${{ steps.extract_branch.outputs.branch }}
+        tag: commit-${{ github.sha }}
+        draft: true
+        prerelease: true
