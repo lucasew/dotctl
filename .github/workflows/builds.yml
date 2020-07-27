@@ -20,8 +20,8 @@ jobs:
     - name: Setup earth
       run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
       
-    - name: Build
-      run: earth +build
+    - name: Build and test
+      run: earth +ci
       
     - name: Upload release
       uses: ncipollo/release-action@v1
@@ -33,6 +33,3 @@ jobs:
         tag: commit-${{ github.sha }}
         draft: true
         prerelease: true
-
-    - name: Test
-      run: earth +test
