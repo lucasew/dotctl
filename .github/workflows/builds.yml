@@ -16,11 +16,27 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
     
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    
     - name: Setup earth
       run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earth-linux-amd64 -O /usr/local/bin/earth && chmod +x /usr/local/bin/earth'"
       
     - name: Build
       run: earth +build
+      
+    - name: Upload release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "./dotctl"
+        name: Compilação automática ${{ github.sha }} para branch ${{ steps.extract_branch.outputs.branch }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit: ${{ steps.extract_branch.outputs.branch }}
+        tag: commit-${{ github.sha }}
+        draft: true
+        prerelease: true
 
     - name: Test
       run: earth +test
