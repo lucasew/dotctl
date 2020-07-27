@@ -30,7 +30,7 @@ jobs:
     - name: Upload release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "dotctl"
+        artifacts: "dist/*"
         name: Compilação automática ${{ github.sha }} para branch ${{ steps.extract_branch.outputs.branch }}
         token: ${{ secrets.GITHUB_TOKEN }}
         commit: ${{ steps.extract_branch.outputs.branch }}
